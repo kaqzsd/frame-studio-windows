@@ -1,8 +1,8 @@
 $ErrorActionPreference = 'Stop'
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-$bundleUrl = 'https://github.com/kaqzsd/frame-studio-windows/releases/download/windows-test-2026.11.03-1/frame-studio-windows.zip'
-$expectedSha256 = 'fdf1826e061f3496a8a816b3f6a0d9471b14064289b843d4418fa1391befa2c8'
-$version = 'windows-test-2026.11.03-1'
+$bundleUrl = 'https://github.com/kaqzsd/frame-studio-windows/releases/download/windows-test-2026.11.03-2/frame-studio-windows.zip'
+$expectedSha256 = '57fb61e2d12f69103a84e348b3c0f760a26ffccd4e710b4b67bf86f88ab926c5'
+$version = 'windows-test-2026.11.03-2'
 $folder = Join-Path $env:LOCALAPPDATA ('FrameStudioWorker\packages\' + $version + '-' + [Guid]::NewGuid().ToString('N').Substring(0, 8))
 New-Item -ItemType Directory -Path $folder -Force | Out-Null
 $zip = Join-Path $folder 'frame-studio-windows.zip'
