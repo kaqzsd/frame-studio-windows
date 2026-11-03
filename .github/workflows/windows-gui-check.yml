@@ -1,0 +1,23 @@
+name: Windows GUI shutdown checks
+on:
+  push:
+    branches: [codex/windows-gui-shutdown-fix]
+permissions:
+  contents: read
+jobs:
+  shutdown:
+    runs-on: windows-2022
+    timeout-minutes: 8
+    steps:
+      - name: Fetch exact public source commit
+        shell: powershell
+        run: |
+          git init .
+          git remote add origin https://github.com/kaqzsd/frame-studio-windows.git
+          git fetch --depth 1 origin $env:GITHUB_SHA
+          if ($LASTEXITCODE -ne 0) { throw 'Fetch failed' }
+          git checkout --detach FETCH_HEAD
+          if ($LASTEXITCODE -ne 0) { throw 'Checkout failed' }
+      - name: Compile and exercise hung processes
+        shell: powershell
+        run: .\tests\windows-shutdown.ps1
