@@ -7,14 +7,14 @@
 在 Windows **PowerShell** 中粘贴以下命令。不需要管理员权限，不要求与另一台电脑处于同一网段。
 
 ```powershell
-$p=Join-Path $env:TEMP ("frame-test-"+[guid]::NewGuid()+".ps1"); iwr -UseBasicParsing "https://github.com/kaqzsd/frame-studio-windows/releases/download/windows-test-2026.11.03-1/start.ps1" -OutFile $p; powershell -NoProfile -ExecutionPolicy Bypass -File $p
+$p=Join-Path $env:TEMP ("frame-test-"+[guid]::NewGuid()+".ps1"); iwr -UseBasicParsing "https://github.com/kaqzsd/frame-studio-windows/releases/download/windows-test-2026.11.03-2/start.ps1" -OutFile $p; powershell -NoProfile -ExecutionPolicy Bypass -File $p
 ```
 
-需要 Python 3.12 或更新版本，以及官方 Codex CLI 或带有 codex.exe 的官方桌面应用。缺少 Python 时按提示安装后重新执行；脚本不会替换系统软件。
+需要 Python 3.12 或更新版本，以及官方 Codex CLI。也可尝试桌面应用内附 codex.exe；如果 Windows 拒绝从终端启动，请使用独立 CLI，不要修改 WindowsApps 权限。缺少 Python 时按提示安装后重新执行；脚本不会替换系统软件。
 
 依次下载并核对 ZIP、建立本地 Python 环境、离线自检、本人 ChatGPT 登录。最后明确询问是否进行两轮订阅测试；回答 `y` 后才调用模型，使用该账号的订阅额度。测试采用进程内的临时网站副本，不访问正式网站，不需要网站连接码。
 
-[下载 ZIP](https://github.com/kaqzsd/frame-studio-windows/releases/download/windows-test-2026.11.03-1/frame-studio-windows.zip)，也可手动解压，依次运行 `01-install.cmd`、`03-login.cmd`、`07-subscription-test.cmd`。
+[下载 ZIP](https://github.com/kaqzsd/frame-studio-windows/releases/download/windows-test-2026.11.03-2/frame-studio-windows.zip)，也可手动解压，依次运行 `01-install.cmd`、`03-login.cmd`、`07-subscription-test.cmd`。
 
 ## 测试结果
 
@@ -30,8 +30,10 @@ $p=Join-Path $env:TEMP ("frame-test-"+[guid]::NewGuid()+".ps1"); iwr -UseBasicPa
 
 软件只接受 ChatGPT 登录，不配置 API Key 后备；额度不足、登录过期或协议不兼容时停止。两轮测试最多每轮 5 分钟，不创建开机服务或永久后台任务。普通网站接入在管理员发布新版网站并分配专用连接码后另行进行。
 
-开发机 macOS 的 116 项回归、4 个浏览器场景，以及解压包两轮模拟闭环通过。Windows 真机安装、登录、Job Object 进程退出和真实订阅执行仍待操作者回传报告；没有把 Mac 测试写成 Windows 已验证。
+2026-11-03：Windows 10 真机安装、中文路径、文件锁、连续三轮超时子进程清理、官方独立 CLI 0.166.0 配置检查和两轮模拟网站闭环已通过；修复后的完整 ZIP 也已重新安装并通过离线自检。开发机 120 项回归及额外的 Mac 系统隔离检查通过。Windows 11 尚未真机测试，Windows 真实订阅执行尚待本人完成官方设备授权后验证。
 
-ZIP SHA-256：`fdf1826e061f3496a8a816b3f6a0d9471b14064289b843d4418fa1391befa2c8`。启动器核对这个值，安装器再次验证包内文件清单。仓库和发布包不含账号凭据、个人记忆、生产数据或真实连接码。
+ZIP SHA-256：`57fb61e2d12f69103a84e348b3c0f760a26ffccd4e710b4b67bf86f88ab926c5`。启动器核对这个值，安装器再次验证包内文件清单。仓库和发布包不含账号凭据、个人记忆、生产数据或真实连接码。
 
 [官方 Codex CLI 文档](https://learn.chatgpt.com/docs/cli) · [官方 app-server 文档](https://learn.chatgpt.com/docs/app-server)
+
+本版修复：Windows Python 启动竞态与子进程退出等待、数据库初始结构漏打包、多版本 Python 选择，以及 SSH 设备码登录。可用 `Install.ps1 -PythonPath "完整的 python.exe 路径"` 指定独立 Python；无须替换系统默认版本。
