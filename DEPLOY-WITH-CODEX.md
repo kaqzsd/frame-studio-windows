@@ -4,7 +4,7 @@
 
 > 请帮我把这台 Windows 10/11 连接到 https://projects.zuichenji.cn 的项目协作网站。
 >
-> 使用 https://github.com/kaqzsd/frame-studio-windows/releases/tag/windows-connect-2026.11.03-3 的 frame-studio-windows-connect.zip 和 SHA256SUMS.txt。先核对下载 SHA256，再解压到独立目录，检查 README.txt，并运行 00-connect.cmd。
+> 使用 https://github.com/kaqzsd/frame-studio-windows/releases/tag/windows-connect-2026.11.04 的 frame-studio-windows-connect.zip 和 SHA256SUMS.txt。先核对下载 SHA256，再解压到独立目录，检查 README.txt，并运行 00-connect.cmd。
 >
 > 不使用 WSL，不修改我原来的 ChatGPT/Codex 记忆、系统代理或默认 Python，不安装开机服务，不配置 API Key。需要依赖时仅使用包中声明的官方来源。Windows 为直接执行模式。
 >
@@ -15,3 +15,6 @@
 如果网站还没有「我的电脑与朋友」的接入权限，请先让站主在「协作成员」开通，或接受带“允许接入自己的电脑并邀请朋友”的邀请。
 
 已安装但显示离线时通常只需启动接单窗口，不需要重新配置或重装 GPT。
+
+
+2026-11-04 更新：Windows 制作端使用已有系统代理，接单窗口持续运行（每 5 秒查询），断线保留任务记录并恢复连接；已启用 Codex 官方实时网页搜索，来源随回答回传。只打开 ChatGPT 不会启动网站接单，需要运行 05-start.cmd。
