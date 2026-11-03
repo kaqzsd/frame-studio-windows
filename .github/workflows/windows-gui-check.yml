@@ -21,3 +21,6 @@ jobs:
       - name: Compile and exercise hung processes
         shell: powershell
         run: .\tests\windows-shutdown.ps1
+      - name: Verify update and preserved user data
+        shell: powershell
+        run: .\tests\windows-update.ps1
