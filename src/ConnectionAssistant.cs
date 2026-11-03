@@ -376,6 +376,8 @@ namespace FrameStudio {
             return child==null?0:child.Id;
         }
         public void BlockFixturePipe(){if(input!=null)SendInput(input,new string('x',1024*1024));}
+        public bool ShutdownIdle {get{return child==null;}}
+        public void TestForceStop(){ForceStop(false);}
         public void TestClose(bool immediate){shutdownTestChoice=immediate?DialogResult.No:DialogResult.Yes;Close();}
         // This checks the actual form layout and required controls without touching a user's desktop or credentials.
         public object LayoutCheck(){
@@ -409,7 +411,8 @@ namespace FrameStudio {
             }
             if(action=="shutdown-check"){
                 string mode=args.Length>1?args[1]:"run";
-                bool immediate=args.Length>2&&args[2]=="immediate",blocked=args.Length>3&&args[3]=="blocked";
+                bool immediate=args.Length>2&&args[2]=="immediate",forceOnly=args.Length>2&&args[2]=="force",blocked=args.Length>3&&args[3]=="blocked";
+                bool remainedOpen=false;
                 string marker=Path.Combine(Path.GetTempPath(),"frame-shutdown-fixture-"+Guid.NewGuid().ToString("N")+".json");
                 var elapsed=new Stopwatch();Process parent=null,leaf=null;int ticks=0;double largestGap=0;DateTime previous=DateTime.UtcNow;
                 string testError="";
@@ -426,17 +429,24 @@ namespace FrameStudio {
                             leaf=Process.GetProcessById(Convert.ToInt32(record["pid"]));var lh=leaf.Handle;
                             if(leaf.StartTime.ToUniversalTime().Ticks!=Convert.ToInt64(record["start"]))throw new IOException();
                             if(blocked)form.BlockFixturePipe();
-                            await Task.Delay(350);elapsed.Start();form.TestClose(immediate);
+                            await Task.Delay(350);elapsed.Start();
+                            if(forceOnly){
+                                form.TestForceStop();
+                                for(int i=0;i<120&&!form.ShutdownIdle;i++)await Task.Delay(50);
+                                remainedOpen=form.ShutdownIdle&&!form.IsDisposed;
+                                if(!remainedOpen)throw new IOException();
+                                form.Close();
+                            }else form.TestClose(immediate);
                         }catch(Exception ex){testError=ex.GetType().Name;form.TestClose(true);}
                     };
                     timer.Start();Application.Run(form);timer.Stop();elapsed.Stop();
                 }
                 bool parentExited=parent!=null&&parent.WaitForExit(1500),leafExited=leaf!=null&&leaf.WaitForExit(1500);
-                bool passed=testError==""&&parentExited&&leafExited&&ticks>=4&&largestGap<1500&&elapsed.ElapsedMilliseconds<(immediate?4500:12000);
-                var report=new {result=passed?"passed":"failed",mode=mode,immediate=immediate,blocked_pipe=blocked,
+                bool passed=testError==""&&parentExited&&leafExited&&ticks>=4&&largestGap<1500&&elapsed.ElapsedMilliseconds<(immediate?4500:forceOnly?7000:12000)&&(!forceOnly||remainedOpen);
+                var report=new {result=passed?"passed":"failed",mode=mode,immediate=immediate,force_stop_only=forceOnly,window_remained_open=remainedOpen,blocked_pipe=blocked,
                     elapsed_ms=elapsed.ElapsedMilliseconds,ui_ticks=ticks,max_ui_gap_ms=largestGap,parent_exited=parentExited,descendant_exited=leafExited,
                     error_type=testError,model_called=false,personal_data_read=false};
-                File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"shutdown-"+mode+"-"+(immediate?"immediate":"bounded")+(blocked?"-blocked":"")+".json"),new JavaScriptSerializer().Serialize(report),new UTF8Encoding(false));
+                File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"shutdown-"+mode+"-"+(immediate?"immediate":forceOnly?"force":"bounded")+(blocked?"-blocked":"")+".json"),new JavaScriptSerializer().Serialize(report),new UTF8Encoding(false));
                 if(parent!=null)parent.Dispose();if(leaf!=null)leaf.Dispose();try{File.Delete(marker);}catch{}
                 Environment.ExitCode=passed?0:1;return;
             }
