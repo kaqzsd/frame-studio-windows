@@ -43,3 +43,5 @@
 下载和公开源码：https://github.com/kaqzsd/frame-studio-windows
 
 已在 Windows 10 真机验证；Windows 11 尚未真机测试。
+
+推理强度：项目对话中，模型旁可以选自动或该模型实际支持的强度。切换模型后恢复自动，回复显示本轮设置。Windows 10 已完成网页“你好”真实订阅回复，模型 gpt-6.1-sol、强度 high；没有运行其他项目。
